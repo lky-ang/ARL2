@@ -317,19 +317,18 @@
   <div class="sec-label">Abstract</div>
   <p>
     Autoregressive video diffusion models suffer from a critical bottleneck: quadratic compute complexity
-    and a linearly-growing KV cache that makes long or streaming video generation prohibitively expensive.
+    and a linearly growing KV cache, making long or streaming video generation prohibitively expensive.
   </p>
   <p>
-    We present <strong>ARL2</strong> (<em>Attend Locally, Remember Linearly</em>), a hybrid attention
-    architecture that replaces standard cross-frame attention with a <em>fixed-size recurrent state</em>.
-    ARL2 decomposes attention into two complementary branches: intra-frame softmax attention for
-    fine-grained spatial modeling, and an inter-frame gated recurrent linear branch that compresses
-    all past-frame context into constant-size memory regardless of video length.
+    We present <strong>ARL2 (Attend Locally, Remember Linearly)</strong>, a hybrid attention architecture
+    that enables efficient long-horizon video generation with constant-size temporal memory. With
+    <strong>75% of layers replaced by hybrid linear attention</strong>, ARL2 achieves up to
+    <strong>2.26× wall-clock speedup</strong> and <strong>54% memory reduction</strong>, while maintaining
+    comparable generation quality and improving temporal consistency.
   </p>
   <p>
-    ARL2 is the first work to convert a pretrained autoregressive video diffusion model into a hybrid
-    linear attention architecture via a two-stage training scheme requiring only ~156 H100 GPU-hours
-    and ~2% trainable parameters, while maintaining comparable quality and improving temporal consistency.
+    ARL2 also provides a practical path to upgrading pretrained autoregressive video diffusion models,
+    requiring only <strong>~156 H100 GPU-hours</strong> and <strong>~2% trainable parameters</strong>.
   </p>
 </section>
 
