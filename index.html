@@ -318,8 +318,6 @@
   <p>
     Autoregressive video diffusion models suffer from a critical bottleneck: quadratic compute complexity
     and a linearly-growing KV cache that makes long or streaming video generation prohibitively expensive.
-    Existing approaches either reduce per-step costs while still accumulating cache, or discard temporal
-    context irreversibly — both fail at scale.
   </p>
   <p>
     We present <strong>ARL2</strong> (<em>Attend Locally, Remember Linearly</em>), a hybrid attention
@@ -365,6 +363,17 @@
       after the full denoising pass completes, preventing noisy intermediates from corrupting temporal memory.
     </div>
   </div>
+
+  <div style="margin-top:28px;">
+    <img src="static/images/fig2.png" alt="ARL2 attention module architecture diagram"
+         style="width:100%; border-radius:var(--radius-lg); border:1px solid var(--border); display:block;" />
+    <p class="fig-caption" style="margin-top:14px;">
+      <strong style="color:var(--text)">Figure 2.</strong>
+      The ARL2 attention module. Each layer splits tokens into an intra-frame softmax branch
+      (local spatial attention) and an inter-frame linear recurrent branch (fixed-size gated state),
+      whose outputs are summed to form the final representation.
+    </p>
+  </div>
 </section>
 
 <div class="div"></div>
@@ -406,31 +415,20 @@
     <div class="sec-label">Qualitative Results</div>
     <h2>Video Comparisons</h2>
     <p>
-      We compare Cross-Frame attention (CF) and Single-Frame attention (SF) baselines against
-      ARL2 with 50% and 75% of attention layers replaced, across two generation prompts.
+      Generated videos from ARL2 with 50% and 75% of attention layers replaced, across two prompts.
     </p>
   </div>
 
   <!-- Column headers -->
-  <div class="col-headers">
-    <div class="col-hdr baseline">Cross-Frame (CF)</div>
-    <div class="col-hdr baseline">Single-Frame (SF)</div>
-    <div class="col-hdr ours-col">ARL2 — 50%</div>
-    <div class="col-hdr ours-col">ARL2 — 75%</div>
+  <div class="col-headers two" style="max-width:none; grid-template-columns:repeat(2,1fr);">
+    <div class="col-hdr ours-col">ARL2 — 50% layers replaced</div>
+    <div class="col-hdr ours-col">ARL2 — 75% layers replaced</div>
   </div>
 
   <!-- Prompt 1 -->
   <div class="prompt-block">
     <div class="prompt-label">Prompt 1</div>
-    <div class="vid-grid-4">
-      <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/cf.mp4" type="video/mp4"/></video>
-        <div class="vid-lbl">Cross-Frame</div>
-      </div>
-      <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/sf.mp4" type="video/mp4"/></video>
-        <div class="vid-lbl">Single-Frame</div>
-      </div>
+    <div class="vid-grid-2" style="max-width:none;">
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/ours_50%.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (50%)</div>
@@ -445,11 +443,7 @@
   <!-- Prompt 2 -->
   <div class="prompt-block">
     <div class="prompt-label">Prompt 2</div>
-    <div class="col-headers two" style="margin-bottom:8px;">
-      <div class="col-hdr ours-col">ARL2 — 50%</div>
-      <div class="col-hdr ours-col">ARL2 — 75%</div>
-    </div>
-    <div class="vid-grid-2">
+    <div class="vid-grid-2" style="max-width:none;">
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/50%.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (50%)</div>
