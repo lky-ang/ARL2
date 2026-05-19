@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARL2: Linear Attention as Cross-Frame Memory for Autoregressive Video Diffusion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #08080e;
+      --bg2:     #111119;
+      --bg3:     #18181f;
+      --border:  rgba(255,255,255,0.07);
+      --accent:  #7c6cfc;
+      --accent2: #a78bfa;
+      --text:    #e6e6f0;
+      --muted:   #8888a0;
+      --dim:     #44445a;
+      --radius:  12px;
+      --radius-lg: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 4px;
+      padding: 10px 20px;
+      background: rgba(8,8,14,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      padding: 5px 13px; border-radius: 99px;
+      transition: all 0.18s;
+    }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 920px; margin: 0 auto;
+      padding: 72px 24px 56px; text-align: center;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 14px; border-radius: 99px;
+      border: 1px solid rgba(167,139,250,0.35);
+      color: var(--accent2);
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(1.55rem, 3.8vw, 2.5rem);
+      font-weight: 700; line-height: 1.22;
+      letter-spacing: -0.025em; margin-bottom: 30px;
+      background: linear-gradient(140deg, #ffffff 30%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .authors {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 6px 22px;
+      margin-bottom: 8px;
+    }
+    .author { font-size: 1rem; font-weight: 500; }
+    .inst { color: var(--muted); font-size: 0.88rem; margin-bottom: 32px; }
+
+    .badges {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 10px; margin-bottom: 52px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; border-radius: 99px;
+      font-size: 0.86rem; font-weight: 600;
+      text-decoration: none; transition: all 0.18s;
+      border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text);
+    }
+    .badge:hover {
+      background: var(--bg3); border-color: var(--accent);
+      color: var(--accent2); transform: translateY(-2px);
+    }
+    .badge.soon { opacity: 0.5; cursor: default; }
+    .badge.soon:hover { transform: none; border-color: var(--border); color: var(--text); background: var(--bg2); }
+
+    /* ── TEASER IMAGE ── */
+    .teaser-img {
+      max-width: 860px; margin: 0 auto 72px; padding: 0 24px;
+    }
+    .teaser-img img {
+      width: 100%; border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      display: block;
+    }
+    .fig-caption {
+      text-align: center; margin-top: 14px;
+      font-size: 0.82rem; color: var(--muted); line-height: 1.55;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 880px; margin: 0 auto 80px; padding: 0 24px;
+    }
+    .sec-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--accent2); margin-bottom: 14px;
+    }
+    h2 {
+      font-size: 1.55rem; font-weight: 700;
+      letter-spacing: -0.02em; margin-bottom: 18px;
+    }
+    p { color: #b0b0c8; font-size: 0.97rem; margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── METHOD CARD ── */
+    .method-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px; margin-top: 26px;
+    }
+    .two-branch {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px;
+    }
+    @media (max-width: 540px) { .two-branch { grid-template-columns: 1fr; } }
+    .branch {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .branch h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 7px; }
+    .branch p { font-size: 0.85rem; color: var(--muted); }
+    .branch.intra h3 { color: #7dd3fc; }
+    .branch.inter h3 { color: var(--accent2); }
+    .note {
+      margin-top: 20px; padding: 14px 18px;
+      background: var(--bg3); border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.86rem; color: var(--muted); line-height: 1.6;
+    }
+
+    /* ── HIGHLIGHTS ── */
+    .highlights {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 26px;
+    }
+    @media (max-width: 600px) { .highlights { grid-template-columns: 1fr; } }
+    .hl {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 18px; text-align: center;
+    }
+    .hl-num {
+      font-size: 2.1rem; font-weight: 700;
+      color: var(--accent2); letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 6px;
+    }
+    .hl-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+
+    /* ── VIDEO SECTION ── */
+    .vid-section { max-width: 1060px; margin: 0 auto 80px; padding: 0 24px; }
+
+    .prompt-block { margin-bottom: 40px; }
+    .prompt-label {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 12px; padding-left: 2px;
+    }
+    .vid-grid-4 {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+    }
+    .vid-grid-2 {
+      display: grid; grid-template-columns: repeat(2,1fr);
+      gap: 10px; max-width: 540px;
+    }
+    @media (max-width: 700px) { .vid-grid-4 { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 420px) { .vid-grid-4, .vid-grid-2 { grid-template-columns: 1fr; } }
+
+    .vid-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .vid-card video {
+      width: 100%; display: block;
+      aspect-ratio: 16/9; object-fit: cover; background: #000;
+    }
+    .vid-lbl {
+      padding: 8px 12px; font-size: 0.75rem; font-weight: 600;
+      color: var(--muted); text-align: center; letter-spacing: 0.02em;
+    }
+    .vid-lbl.ours { color: var(--accent2); }
+
+    /* column headers */
+    .col-headers {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+      margin-bottom: 8px;
+    }
+    .col-headers.two { grid-template-columns: repeat(2,1fr); max-width: 540px; }
+    .col-hdr {
+      text-align: center; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 6px; border-radius: 7px;
+    }
+    .col-hdr.baseline { background: rgba(255,255,255,0.03); color: var(--muted); }
+    .col-hdr.ours-col {
+      background: rgba(124,108,252,0.1); color: var(--accent2);
+      border: 1px solid rgba(124,108,252,0.2);
+    }
+    @media (max-width: 700px) {
+      .col-headers { grid-template-columns: repeat(2,1fr); }
+    }
+
+    /* ── BIBTEX ── */
+    .bibtex-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px; margin-top: 18px;
+      position: relative;
+    }
+    .bibtex-wrap pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: #9898b8;
+      white-space: pre-wrap; word-break: break-all; line-height: 1.7;
+    }
+    .copy-btn {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.73rem; font-weight: 600;
+      padding: 4px 11px; border-radius: 6px; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all 0.18s;
+    }
+    .copy-btn:hover { color: var(--accent2); border-color: var(--accent); }
+
+    /* ── DIVIDER ── */
+    .div { height: 1px; background: var(--border); max-width: 880px; margin: 0 auto 80px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px; text-align: center;
+      color: var(--dim); font-size: 0.8rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#abstract">Abstract</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#videos">Videos</a>
+  <a href="#bibtex">BibTeX</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">arXiv &nbsp;·&nbsp; 2026</div>
+  <h1>Attend Locally, Remember Linearly:<br>
+      Linear Attention as Cross-Frame Memory<br>
+      for Autoregressive Video Diffusion</h1>
+
+  <div class="authors">
+    <span class="author">Kunyang Li</span>
+    <span class="author">Mubarak Shah</span>
+    <span class="author">Yuzhang Shang</span>
+  </div>
+  <p class="inst">Institute of Artificial Intelligence &nbsp;·&nbsp; University of Central Florida</p>
+
+  <div class="badges">
+    <a class="badge" href="https://arxiv.org/abs/2605.16579" target="_blank">
+      <!-- paper icon -->
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      arXiv
+    </a>
+    <a class="badge" href="https://arxiv.org/pdf/2605.16579" target="_blank">
+      <!-- pdf icon -->
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF
+    </a>
+    <a class="badge soon" title="Code coming soon">
+      <!-- github icon -->
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Code (Coming Soon)
+    </a>
+  </div>
+</div>
+
+<!-- TEASER FIGURE -->
+<div class="teaser-img">
+  <img src="static/images/teaser.png" alt="ARL2 teaser: comparison between softmax cross-frame attention with growing KV cache vs. ARL2 hybrid linear attention with fixed-size recurrent state" />
+  <p class="fig-caption">
+    <strong style="color:var(--text)">Figure 1.</strong>
+    (a) AR video diffusion with standard softmax attention incurs O(N) memory due to a growing KV cache.
+    (b) ARL2 replaces cross-frame attention with a fixed-size recurrent state, achieving O(1) memory
+    for arbitrarily long video generation.
+  </p>
+</div>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <div class="sec-label">Abstract</div>
+  <p>
+    Autoregressive video diffusion models suffer from a critical bottleneck: quadratic compute complexity
+    and a linearly-growing KV cache that makes long or streaming video generation prohibitively expensive.
+    Existing approaches either reduce per-step costs while still accumulating cache, or discard temporal
+    context irreversibly — both fail at scale.
+  </p>
+  <p>
+    We present <strong>ARL2</strong> (<em>Attend Locally, Remember Linearly</em>), a hybrid attention
+    architecture that replaces standard cross-frame attention with a <em>fixed-size recurrent state</em>.
+    ARL2 decomposes attention into two complementary branches: intra-frame softmax attention for
+    fine-grained spatial modeling, and an inter-frame gated recurrent linear branch that compresses
+    all past-frame context into constant-size memory regardless of video length.
+  </p>
+  <p>
+    ARL2 is the first work to convert a pretrained autoregressive video diffusion model into a hybrid
+    linear attention architecture via a two-stage training scheme requiring only ~156 H100 GPU-hours
+    and ~2% trainable parameters, while maintaining comparable quality and improving temporal consistency.
+  </p>
+</section>
+
+<div class="div"></div>
+
+<!-- METHOD -->
+<section id="method">
+  <div class="sec-label">Method</div>
+  <h2>Dual-Branch Hybrid Attention</h2>
+  <p>
+    ARL2 replaces cross-frame attention in each transformer layer with a dual-branch module that
+    handles spatial and temporal reasoning separately.
+  </p>
+  <div class="method-card">
+    <div class="two-branch">
+      <div class="branch intra">
+        <h3>Intra-Frame Branch</h3>
+        <p>Bidirectional softmax attention within each frame. Preserves fine-grained spatial interactions
+        at full precision, unchanged from the pretrained model.</p>
+      </div>
+      <div class="branch inter">
+        <h3>Inter-Frame Branch</h3>
+        <p>Gated Delta Network recurrent state shared across all frames. Compresses past context into
+        a fixed-size state — constant memory regardless of sequence length.</p>
+      </div>
+    </div>
+    <div class="note">
+      <strong style="color:var(--text)">Frame-level state access</strong> — all tokens within a frame query
+      the same pre-update recurrent state, preventing intra-frame inconsistency.<br><br>
+      <strong style="color:var(--text)">Clean-pass updates</strong> — the recurrent state is updated only
+      after the full denoising pass completes, preventing noisy intermediates from corrupting temporal memory.
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="sec-label">Efficiency &amp; Quality</div>
+  <h2>Results</h2>
+  <p>
+    ARL2 delivers substantial efficiency gains at long video lengths while maintaining generation quality
+    and improving temporal consistency over the baseline.
+  </p>
+  <div class="highlights">
+    <div class="hl">
+      <div class="hl-num">2.26×</div>
+      <div class="hl-desc">wall-clock speedup<br><span style="color:var(--dim)">at 921 frames · ARL2 75%</span></div>
+    </div>
+    <div class="hl">
+      <div class="hl-num">54%</div>
+      <div class="hl-desc">memory reduction<br><span style="color:var(--dim)">at 921 frames · ARL2 75%</span></div>
+    </div>
+    <div class="hl">
+      <div class="hl-num">+1.35</div>
+      <div class="hl-desc">motion smoothness gain<br><span style="color:var(--dim)">over baseline on VBench</span></div>
+    </div>
+  </div>
+  <p style="margin-top:20px; font-size:0.88rem;">
+    At 1005 frames, the baseline exceeds 91 GB VRAM and runs out of memory.
+    ARL2 completes the same sequence in <strong style="color:var(--text)">179 s using only 43 GB</strong>,
+    enabling generation lengths that are simply impossible with standard attention.
+  </p>
+</section>
+
+<div class="div"></div>
+
+<!-- VIDEOS -->
+<div class="vid-section" id="videos">
+  <div style="max-width:880px; margin: 0 auto 28px;">
+    <div class="sec-label">Qualitative Results</div>
+    <h2>Video Comparisons</h2>
+    <p>
+      We compare Cross-Frame attention (CF) and Single-Frame attention (SF) baselines against
+      ARL2 with 50% and 75% of attention layers replaced, across two generation prompts.
+    </p>
+  </div>
+
+  <!-- Column headers -->
+  <div class="col-headers">
+    <div class="col-hdr baseline">Cross-Frame (CF)</div>
+    <div class="col-hdr baseline">Single-Frame (SF)</div>
+    <div class="col-hdr ours-col">ARL2 — 50%</div>
+    <div class="col-hdr ours-col">ARL2 — 75%</div>
+  </div>
+
+  <!-- Prompt 1 -->
+  <div class="prompt-block">
+    <div class="prompt-label">Prompt 1</div>
+    <div class="vid-grid-4">
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/cf.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl">Cross-Frame</div>
+      </div>
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/sf.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl">Single-Frame</div>
+      </div>
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/ours_50%.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl ours">ARL2 (50%)</div>
+      </div>
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/ours_75%.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl ours">ARL2 (75%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prompt 2 -->
+  <div class="prompt-block">
+    <div class="prompt-label">Prompt 2</div>
+    <div class="col-headers two" style="margin-bottom:8px;">
+      <div class="col-hdr ours-col">ARL2 — 50%</div>
+      <div class="col-hdr ours-col">ARL2 — 75%</div>
+    </div>
+    <div class="vid-grid-2">
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/50%.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl ours">ARL2 (50%)</div>
+      </div>
+      <div class="vid-card">
+        <video autoplay muted loop playsinline><source src="video_demo/75%.mp4" type="video/mp4"/></video>
+        <div class="vid-lbl ours">ARL2 (75%)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- BIBTEX -->
+<section id="bibtex">
+  <div class="sec-label">Citation</div>
+  <h2>BibTeX</h2>
+  <div class="bibtex-wrap">
+    <button class="copy-btn" onclick="copyBib()">Copy</button>
+    <pre id="bib">@article{li2026arl2,
+  title   = {Attend Locally, Remember Linearly: Linear Attention as
+             Cross-Frame Memory for Autoregressive Video Diffusion},
+  author  = {Li, Kunyang and Shah, Mubarak and Shang, Yuzhang},
+  journal = {arXiv preprint arXiv:2605.16579},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <a href="https://arxiv.org/abs/2605.16579">ARL2</a>
+    &nbsp;·&nbsp; University of Central Florida &nbsp;·&nbsp; 2026
+  </p>
+  <p style="margin-top:7px;">
+    Page design inspired by <a href="https://nerfies.github.io" target="_blank">Nerfies</a>.
+  </p>
+</footer>
+
+<script>
+  function copyBib() {
+    navigator.clipboard.writeText(document.getElementById('bib').textContent).then(() => {
+      const b = document.querySelector('.copy-btn');
+      b.textContent = 'Copied!';
+      setTimeout(() => b.textContent = 'Copy', 2000);
+    });
+  }
+</script>
+</body>
+</html>
