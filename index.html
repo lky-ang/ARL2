@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARL2: Linear Attention as Cross-Frame Memory for Autoregressive Video Diffusion</title>
+  <title>ARL²: Linear Attention as Cross-Frame Memory for Autoregressive Video Diffusion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -312,7 +312,7 @@
   <p class="fig-caption">
     <strong style="color:var(--text)">Figure 1.</strong>
     (a) AR video diffusion with standard softmax attention incurs O(N) memory due to a growing KV cache.
-    (b) ARL2 replaces cross-frame attention with a fixed-size recurrent state, achieving O(1) memory
+    (b) ARL<sup>2</sup> replaces cross-frame attention with a fixed-size recurrent state, achieving O(1) memory
     for arbitrarily long video generation.
   </p>
 </div>
@@ -325,14 +325,14 @@
     and a linearly growing KV cache, making long or streaming video generation prohibitively expensive.
   </p>
   <p>
-    We present <strong>ARL2 (Attend Locally, Remember Linearly)</strong>, a hybrid attention architecture
+    We present <strong>ARL<sup>2</sup> (Attend Locally, Remember Linearly)</strong>, a hybrid attention architecture
     that enables efficient long-horizon video generation with constant-size temporal memory. With
-    <strong>75% of layers replaced by hybrid linear attention</strong>, ARL2 achieves up to
+    <strong>75% of layers replaced by hybrid linear attention</strong>, ARL<sup>2</sup> achieves up to
     <strong>2.26× wall-clock speedup</strong> and <strong>54% memory reduction</strong>, while maintaining
     comparable generation quality and improving temporal consistency.
   </p>
   <p>
-    ARL2 also provides a practical path to upgrading pretrained autoregressive video diffusion models,
+    ARL<sup>2</sup> also provides a practical path to upgrading pretrained autoregressive video diffusion models,
     requiring only <strong>~156 H100 GPU-hours</strong> and <strong>~2% trainable parameters</strong>.
   </p>
 </section>
@@ -344,12 +344,12 @@
   <div class="sec-label">Method</div>
   <h2>Dual-Branch Hybrid Attention</h2>
   <p>
-    ARL2 replaces cross-frame attention in each transformer layer with a dual-branch module that
+    ARL<sup>2</sup> replaces cross-frame attention in each transformer layer with a dual-branch module that
     handles spatial and temporal reasoning separately.
   </p>
   <p>
     The <strong style="color:#7dd3fc">intra-frame branch</strong> applies bidirectional softmax attention
-    within each frame, preserving fine-grained spatial interactions at full precision.
+    within each frame, preserving fine-grained spatial interactions.
     The <strong style="color:#6ee7b7">inter-frame branch</strong> uses a Gated Delta Network recurrent
     state shared across all frames, compressing past context into a fixed-size state with constant memory
     regardless of sequence length.
@@ -360,7 +360,7 @@
          style="width:100%; border-radius:var(--radius-lg); border:1px solid var(--border); display:block;" />
     <p class="fig-caption" style="margin-top:14px;">
       <strong style="color:var(--text)">Figure 2.</strong>
-      The ARL2 attention module. Each layer splits tokens into an intra-frame softmax branch
+      The ARL<sup>2</sup> attention module. Each layer splits tokens into an intra-frame softmax branch
       (local spatial attention) and an inter-frame linear recurrent branch (fixed-size gated state),
       whose outputs are summed to form the final representation.
     </p>
@@ -381,17 +381,17 @@
   <div class="sec-label">Efficiency &amp; Quality</div>
   <h2>Results</h2>
   <p>
-    ARL2 delivers substantial efficiency gains at long video lengths while maintaining generation quality
+    ARL<sup>2</sup> delivers substantial efficiency gains at long video lengths while maintaining generation quality
     and improving temporal consistency over the baseline.
   </p>
   <div class="highlights">
     <div class="hl">
       <div class="hl-num">2.26×</div>
-      <div class="hl-desc">wall-clock speedup<br><span style="color:var(--dim)">at 921 frames · ARL2 75%</span></div>
+      <div class="hl-desc">wall-clock speedup<br><span style="color:var(--dim)">at 921 frames · ARL<sup>2</sup> 75%</span></div>
     </div>
     <div class="hl">
       <div class="hl-num">54%</div>
-      <div class="hl-desc">memory reduction<br><span style="color:var(--dim)">at 921 frames · ARL2 75%</span></div>
+      <div class="hl-desc">memory reduction<br><span style="color:var(--dim)">at 921 frames · ARL<sup>2</sup> 75%</span></div>
     </div>
     <div class="hl">
       <div class="hl-num">+1.35</div>
@@ -400,7 +400,7 @@
   </div>
   <p style="margin-top:20px; font-size:0.88rem;">
     At 1005 frames, the baseline exceeds 91 GB VRAM and runs out of memory.
-    ARL2 completes the same sequence in <strong style="color:var(--text)">179 s using only 43 GB</strong>,
+    ARL<sup>2</sup> completes the same sequence in <strong style="color:var(--text)">179 s using only 43 GB</strong>,
     enabling generation lengths that are simply impossible with standard attention.
   </p>
 </section>
@@ -417,11 +417,6 @@
   <!-- Prompt 1 -->
   <div class="prompt-block">
     <div class="prompt-label">"A 3D model of a 1800s Victorian house."</div>
-    <div class="col-headers" style="grid-template-columns:repeat(3,1fr); margin-bottom:8px;">
-      <div class="col-hdr baseline">Causal Forcing (CF)</div>
-      <div class="col-hdr baseline">Self Forcing (SF)</div>
-      <div class="col-hdr ours-col">ARL2 — 50%</div>
-    </div>
     <div class="vid-grid-3">
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/cf.mp4" type="video/mp4"/></video>
@@ -433,7 +428,7 @@
       </div>
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/ours_50pct.mp4" type="video/mp4"/></video>
-        <div class="vid-lbl ours">ARL2 (50%)</div>
+        <div class="vid-lbl ours">ARL<sup>2</sup> (50%)</div>
       </div>
     </div>
   </div>
@@ -441,18 +436,14 @@
   <!-- Prompt 2 -->
   <div class="prompt-block">
     <div class="prompt-label">"A beautiful coastal beach in spring, waves lapping on sand by Hokusai, in the style of Ukiyo."</div>
-    <div class="col-headers" style="grid-template-columns:repeat(2,1fr); margin-bottom:8px;">
-      <div class="col-hdr ours-col">ARL2 — 50%</div>
-      <div class="col-hdr ours-col">ARL2 — 75%</div>
-    </div>
     <div class="vid-grid-2">
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/50pct.mp4" type="video/mp4"/></video>
-        <div class="vid-lbl ours">ARL2 (50%)</div>
+        <div class="vid-lbl ours">ARL<sup>2</sup> (50%)</div>
       </div>
       <div class="vid-card">
         <video autoplay muted loop playsinline><source src="video_demo/75pct.mp4" type="video/mp4"/></video>
-        <div class="vid-lbl ours">ARL2 (75%)</div>
+        <div class="vid-lbl ours">ARL<sup>2</sup> (75%)</div>
       </div>
     </div>
   </div>
@@ -479,7 +470,7 @@
 <!-- FOOTER -->
 <footer>
   <p>
-    <a href="https://arxiv.org/abs/2605.16579">ARL2</a>
+    <a href="https://arxiv.org/abs/2605.16579">ARL<sup>2</sup></a>
     &nbsp;·&nbsp; University of Central Florida &nbsp;·&nbsp; 2026
   </p>
   <p style="margin-top:7px;">
