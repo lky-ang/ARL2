@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lky-ang.github.io/ARL2/sitemap.xml
