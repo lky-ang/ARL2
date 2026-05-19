@@ -343,26 +343,13 @@
     ARL2 replaces cross-frame attention in each transformer layer with a dual-branch module that
     handles spatial and temporal reasoning separately.
   </p>
-  <div class="method-card">
-    <div class="two-branch">
-      <div class="branch intra">
-        <h3>Intra-Frame Branch</h3>
-        <p>Bidirectional softmax attention within each frame. Preserves fine-grained spatial interactions
-        at full precision, unchanged from the pretrained model.</p>
-      </div>
-      <div class="branch inter">
-        <h3>Inter-Frame Branch</h3>
-        <p>Gated Delta Network recurrent state shared across all frames. Compresses past context into
-        a fixed-size state — constant memory regardless of sequence length.</p>
-      </div>
-    </div>
-    <div class="note">
-      <strong style="color:var(--text)">Frame-level state access</strong> — all tokens within a frame query
-      the same pre-update recurrent state, preventing intra-frame inconsistency.<br><br>
-      <strong style="color:var(--text)">Clean-pass updates</strong> — the recurrent state is updated only
-      after the full denoising pass completes, preventing noisy intermediates from corrupting temporal memory.
-    </div>
-  </div>
+  <p>
+    The <strong style="color:var(--text)">intra-frame branch</strong> applies bidirectional softmax attention
+    within each frame, preserving fine-grained spatial interactions at full precision.
+    The <strong style="color:var(--accent2)">inter-frame branch</strong> uses a Gated Delta Network recurrent
+    state shared across all frames, compressing past context into a fixed-size state with constant memory
+    regardless of sequence length.
+  </p>
 
   <div style="margin-top:28px;">
     <img src="static/images/fig2.png" alt="ARL2 attention module architecture diagram"
@@ -373,6 +360,13 @@
       (local spatial attention) and an inter-frame linear recurrent branch (fixed-size gated state),
       whose outputs are summed to form the final representation.
     </p>
+  </div>
+
+  <div class="note" style="margin-top:20px;">
+    <strong style="color:var(--text)">Frame-level state access</strong> — all tokens within a frame query
+    the same pre-update recurrent state, preventing intra-frame inconsistency.<br><br>
+    <strong style="color:var(--text)">Clean-pass updates</strong> — the recurrent state is updated only
+    after the full denoising pass completes, preventing noisy intermediates from corrupting temporal memory.
   </div>
 </section>
 
@@ -430,11 +424,11 @@
     <div class="prompt-label">Prompt 1</div>
     <div class="vid-grid-2" style="max-width:none;">
       <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/ours_50%.mp4" type="video/mp4"/></video>
+        <video autoplay muted loop playsinline><source src="video_demo/ours_50pct.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (50%)</div>
       </div>
       <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/ours_75%.mp4" type="video/mp4"/></video>
+        <video autoplay muted loop playsinline><source src="video_demo/ours_75pct.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (75%)</div>
       </div>
     </div>
@@ -445,11 +439,11 @@
     <div class="prompt-label">Prompt 2</div>
     <div class="vid-grid-2" style="max-width:none;">
       <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/50%.mp4" type="video/mp4"/></video>
+        <video autoplay muted loop playsinline><source src="video_demo/50pct.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (50%)</div>
       </div>
       <div class="vid-card">
-        <video autoplay muted loop playsinline><source src="video_demo/75%.mp4" type="video/mp4"/></video>
+        <video autoplay muted loop playsinline><source src="video_demo/75pct.mp4" type="video/mp4"/></video>
         <div class="vid-lbl ours">ARL2 (75%)</div>
       </div>
     </div>
