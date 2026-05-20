@@ -1,0 +1,22 @@
+# Stress Test Prompt Metadata (V2 — MovieGenBench-calibrated)
+#
+# Design principles:
+#   1. All prompts within Wan 1.3B baseline capability (verified against MovieGenBench style)
+#   2. Each targets a specific GDN weakness (memory decay, low-rank compression, state capacity)
+#   3. Includes control prompts where GDN should NOT degrade (noise floor calibration)
+#   4. Written in MovieGenBench cinematic description style
+#
+# Format: ID | Category | GDN Stress Target | Expected Degradation | MovieGenBench Reference
+#
+00 | Appearance Retention  | Memory decay over time        | Scarf pattern drifts in later frames    | Style: prompt #1 (Tokyo woman)
+01 | Appearance Retention  | Fine detail persistence       | Spot pattern blurs or changes           | Style: prompt #39 (Dalmatian)
+02 | Brief Occlusion       | Short-term precise retrieval  | Dog appearance changes after tree       | Style: prompt #35 (wolf pups)
+03 | Long Occlusion        | Memory survives 1-2s gap      | SUV color/details change after rock     | Style: prompt #18 (vintage SUV)
+04 | Background Stability  | CONTROL (should NOT degrade)  | If fails → layer is critical for basics | Style: prompt #26 (art gallery)
+05 | Multi-Entity (2)      | State capacity competition    | Puppies swap colors or merge            | Style: prompt #48 (two dogs)
+06 | Fast Motion            | Delta rule erasure on rapid Δ | Motion stuttering or ghosting           | Style: prompt #7 (pigeon flight)
+07 | Camera Orbit           | Viewpoint memory coherence    | Scene structure breaks on far side      | Style: prompt #16 (museum)
+08 | Spatial Relationships  | Multi-object identity binding | Candle positions or colors swap         | Direct: spatial ordering test
+09 | Accumulation           | Cumulative state retention    | Early painted areas vanish              | Style: prompt #28 (stop motion growth)
+10 | Continuous Deformation | Identity through shape change | Clay splits or loses coherence          | Direct: object transformation test
+11 | Multi-Entity (group)   | Group tracking in motion      | Airplanes merge or disappear            | Style: prompt #22 (paper airplanes)

@@ -1,0 +1,20 @@
+__pycache__
+*.egg-info
+*.pyc
+
+wan_models
+checkpoints
+output
+dataset
+prompts/vidprom_filtered_extended.txt
+long_video/prompts/vidprom_filtered_extended.txt
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

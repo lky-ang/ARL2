@@ -1,0 +1,51 @@
+# Layer Selection Prompt Metadata (12 prompts)
+#
+# Selection methodology:
+#   Tier 1 (data-validated): Dual verification via
+#     (A) per-layer VBench variance across 30 single-layer replacements
+#     (B) Stage 2 V2 sensitivity (|delta| between baseline and 15-layer hybrid)
+#     Prompts must rank well on BOTH methods (low RankA x RankB product)
+#
+#   Tier 2 (structurally necessary): Fill dimensional coverage gaps in Tier 1
+#     Tier 1 lacks: SQ-dominant (static/slow) and cumulative/progressive prompts
+#     Source: MovieGenVideoBench_qwen_extended_128 (Qwen-extended version, more detailed prompts)
+#
+#   Bootstrap verification: N=10 gives Top-15 overlap=83% with full set;
+#     N=12 gives ~100%. Two Tier 2 prompts added to reach 12 for stability.
+#
+# Evaluation dimensions:
+#   TC = Temporal Consistency (subject_consistency, background_consistency)
+#   DY = Motion Dynamics (dynamic_degree, motion_smoothness)
+#   SQ = Spatial Quality (aesthetic_quality, imaging_quality)
+#
+# Format: ID | Tier | Source | Primary Dimension | Selection Evidence
+#
+00 | Tier1 | stress_test#00 | TC:appearance      | RankA×B=24; strong subject+bg consistency variance across layers
+01 | Tier1 | stress_test#03 | TC:occlusion       | RankA×B=1; #1 on BOTH methods; highest discriminability on all 6 VBench dims
+02 | Tier1 | stress_test#05 | TC:multi-entity    | RankA×B=18; high Stage2 sensitivity (subject_cons -0.045, aesthetic -0.044)
+03 | Tier1 | stress_test#06 | DY:fast-motion     | RankA×B=4; #1 on motion_smoothness variance; imaging |delta|=0.143 in Stage2
+04 | Tier1 | stress_test#07 | TC+DY:viewpoint    | RankA×B=12; #1 on aesthetic variance; DY flip in Stage2 confirms sensitivity
+05 | Tier1 | stress_test#11 | DY:group-motion    | RankA×B=56; #2 on imaging variance; unique group tracking (not redundant with #03)
+06 | Tier2 | MGB_ext#45         | SQ:static-scene    | Structural: only aerial/static scene; expected DY=False (fixes ceiling effect)
+07 | Tier2 | MGB_ext#30         | SQ:slow-portrait   | Structural: near-static human portrait; tests per-frame quality without motion
+08 | Tier2 | MGB_ext#28         | TC:cumulative      | Structural: progressive state change; fills gap from dropped stress_test #09/#10
+09 | Tier2 | MGB_ext#7          | SQ+TC:fine-texture  | Structural: fine feather detail; close-up tests spatial quality preservation
+10 | Tier2 | MGB_ext#4          | DY+TC:natural-scene | Structural: ocean waves + drone camera; medium-speed natural dynamics
+11 | Tier2 | MGB_ext#19         | TC+SQ:reflection   | Structural: window reflections + continuous motion; short prompt, rich visual info
+#
+# Dimension distribution:
+#   TC-dominant:  #00, #01, #02, #08           = 4 (33%)
+#   DY-dominant:  #03, #05, #10                = 3 (25%)
+#   SQ-dominant:  #06, #07, #09                = 3 (25%)
+#   Mixed:        #04 (TC+DY), #11 (TC+SQ)    = 2 (17%)
+#
+# Expected baseline dynamic_degree:
+#   DY=False: #06, #07, #09 (static/slow)     = 3 prompts
+#   DY=True:  remaining                        = 9 prompts
+#   → baseline ≈ 0.75, sufficient headroom for both increase and decrease
+#
+# Compute cost:
+#   (30 layers + 1 baseline) × 12 prompts = 372 videos
+#   Generation: ~5h on 2×H100
+#   VBench (6 dims): ~2h
+#   Total: ~7h

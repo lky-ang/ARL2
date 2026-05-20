@@ -1,0 +1,20 @@
+# Minimal inference config for video generation
+# Used by ablation/evaluation scripts that don't need training params.
+
+causal: true
+independent_first_frame: false
+num_frame_per_block: 3
+
+# Denoising schedule
+denoising_step_list:
+- 1000
+- 750
+- 500
+- 250
+warp_denoising_step: true
+
+# Context noise (0 = clean context)
+context_noise: 0
+
+model_kwargs:
+  timestep_shift: 5.0
