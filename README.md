@@ -5,9 +5,9 @@
 
 <p align="center">
   <div>
-    <a href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank">Kunyang Li</a>,
-    <a href="https://scholar.google.com/citations?user=SHAH_ID" target="_blank">Mubarak Shah</a>,
-    <a href="https://scholar.google.com/citations?user=SHANG_ID" target="_blank">Yuzhang Shang</a>
+    <a href="https://scholar.google.com/citations?user=NcqZtt8AAAAJ" target="_blank">Kunyang Li</a>,
+    <a href="https://scholar.google.com/citations?user=p8gsO3gAAAAJ" target="_blank">Mubarak Shah</a>,
+    <a href="https://scholar.google.com/citations?user=6ZPL5E0AAAAJ" target="_blank">Yuzhang Shang</a>
   </div>
   <div>
     University of Central Florida
