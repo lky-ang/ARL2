@@ -75,24 +75,11 @@ python inference.py \
   --hybrid_layers 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
 ```
 
-#### T2V with Base Causal Forcing (without hybrid attention)
-
-```bash
-python inference.py \
-  --config_path configs/causal_forcing_dmd_chunkwise.yaml \
-  --output_folder output/chunkwise_base \
-  --checkpoint_path checkpoints/chunkwise/causal_forcing.pt \
-  --data_path prompts/test.txt
-```
-
 ## Architecture
 
-ARL² introduces a dual-branch hybrid attention mechanism:
-
-| Branch | Scope | Mechanism | Complexity |
-|---|---|---|---|
-| Intra-frame | Within each denoising block | Softmax attention + RoPE | O(n²) per block |
-| Inter-frame | Across frames | Gated Delta Network (GDN) with fixed-size recurrent state | O(1) memory |
+<p align="center">
+  <img src="assets/teaser.png" width="100%">
+</p>
 
 Key design choices:
 - **Block-level query**: All tokens in a block see the same recurrent state, ensuring spatial consistency
