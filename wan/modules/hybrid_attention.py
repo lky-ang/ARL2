@@ -1,3 +1,5 @@
+# Copyright 2026 Kunyang Li, Mubarak Shah, Yuzhang Shang (ARL²)
+# Licensed under the Apache License, Version 2.0
 """
 HybridBlockAttention V2c: Intra-block softmax + Inter-block GDN (block-level query).
 

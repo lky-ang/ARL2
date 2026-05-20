@@ -1,3 +1,7 @@
+# Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
+# Modified by Causal Forcing (https://github.com/thu-ml/Causal-Forcing)
+# Modified by ARL² (https://github.com/lky-ang/ARL2)
+# Licensed under the Apache License, Version 2.0
 from wan.modules.attention import attention
 from wan.modules.model import (
     WanRMSNorm,

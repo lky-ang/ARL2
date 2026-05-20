@@ -1,3 +1,6 @@
+# Copyright 2026 Kunyang Li, Mubarak Shah, Yuzhang Shang (ARL²)
+# Licensed under the Apache License, Version 2.0
+# Modified from Causal Forcing (https://github.com/thu-ml/Causal-Forcing)
 import argparse
 import torch
 import os

@@ -1,0 +1,48 @@
+ARL²: Attend Locally, Remember Linearly
+Copyright 2026 Kunyang Li, Mubarak Shah, Yuzhang Shang
+
+This product includes software developed by third parties.
+
+=======================================================================
+Causal Forcing
+https://github.com/thu-ml/Causal-Forcing
+Copyright 2026 Hongzhou Zhu, Min Zhao, Guande He, Hang Su, Chongxuan Li, Jun Zhu
+Licensed under the Apache License, Version 2.0
+
+Files derived from Causal Forcing:
+  - pipeline/causal_inference.py
+  - pipeline/causal_diffusion_inference.py
+  - pipeline/bidirectional_inference.py
+  - pipeline/bidirectional_diffusion_inference.py
+  - utils/wan_wrapper.py
+  - utils/dataset.py
+  - utils/scheduler.py
+  - utils/misc.py
+  - configs/
+  - demo.py
+  - demo_utils/
+  - inference.py (modified)
+
+=======================================================================
+Wan 2.1
+https://github.com/Wan-Video/Wan2.1
+Copyright 2024-2025 The Alibaba Wan Team Authors
+Licensed under the Apache License, Version 2.0
+
+Files derived from Wan 2.1:
+  - wan/ (base model, VAE, T5, tokenizers, attention, etc.)
+
+=======================================================================
+Rolling Forcing
+https://github.com/TencentARC/RollingForcing
+
+Files derived from Rolling Forcing:
+  - long_video/
+
+=======================================================================
+CausVid / Self Forcing
+https://github.com/tianweiy/CausVid
+https://github.com/guandehe/Self-Forcing
+
+Portions of the training and distillation infrastructure are derived
+from CausVid and Self Forcing.
