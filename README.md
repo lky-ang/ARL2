@@ -34,7 +34,7 @@ ARL² replaces quadratic cross-frame softmax attention in autoregressive video d
 - **Clean-state update**: Recurrent state updated only post-denoising to prevent noise corruption
 - **Scalable**: Constant memory for cross-frame attention regardless of video length
 - **Two-stage training**: Per-layer distillation (Stage 1) followed by end-to-end teacher distillation (Stage 2)
-- **Compatible**: Built on [Causal Forcing](https://github.com/thu-ml/Causal-Forcing) + [Wan 2.1](https://github.com/Wan-Video/Wan2.1) backbone; supports T2V, I2V, and long video generation
+- **Compatible**: Built on [Causal Forcing](https://github.com/thu-ml/Causal-Forcing) + [Wan 2.1](https://github.com/Wan-Video/Wan2.1) backbone
 
 ## Quick Start
 
@@ -54,7 +54,6 @@ python setup.py develop
 Base models (Wan 2.1 + Causal Forcing):
 ```bash
 huggingface-cli download Wan-AI/Wan2.1-T2V-1.3B --local-dir wan_models/Wan2.1-T2V-1.3B
-huggingface-cli download zhuhz22/Causal-Forcing framewise/causal_forcing.pt --local-dir checkpoints
 huggingface-cli download zhuhz22/Causal-Forcing chunkwise/causal_forcing.pt --local-dir checkpoints
 ```
 
@@ -67,18 +66,6 @@ ARL² hybrid attention checkpoints (coming soon):
 
 #### T2V with Hybrid Attention (ARL²)
 
-Frame-wise model:
-```bash
-python inference.py \
-  --config_path configs/causal_forcing_dmd_framewise.yaml \
-  --output_folder output/framewise \
-  --checkpoint_path checkpoints/framewise/causal_forcing.pt \
-  --data_path prompts/test.txt \
-  --use_ema \
-  --hybrid_layers 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
-```
-
-Chunk-wise model:
 ```bash
 python inference.py \
   --config_path configs/causal_forcing_dmd_chunkwise.yaml \
@@ -92,29 +79,11 @@ python inference.py \
 
 ```bash
 python inference.py \
-  --config_path configs/causal_forcing_dmd_framewise.yaml \
-  --output_folder output/framewise_base \
-  --checkpoint_path checkpoints/framewise/causal_forcing.pt \
-  --data_path prompts/test.txt \
-  --use_ema
+  --config_path configs/causal_forcing_dmd_chunkwise.yaml \
+  --output_folder output/chunkwise_base \
+  --checkpoint_path checkpoints/chunkwise/causal_forcing.pt \
+  --data_path prompts/test.txt
 ```
-
-#### I2V
-
-```bash
-python inference.py \
-  --config_path configs/causal_forcing_dmd_framewise.yaml \
-  --output_folder output/i2v \
-  --checkpoint_path checkpoints/framewise/causal_forcing.pt \
-  --data_path prompts/i2v \
-  --i2v \
-  --use_ema \
-  --hybrid_layers 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
-```
-
-### Long Video Generation
-
-Built on [Rolling Forcing](https://github.com/TencentARC/RollingForcing), we support minute-level long video generation. See [long_video/](./long_video) for details.
 
 ## Architecture
 
@@ -142,7 +111,6 @@ This codebase is built on top of:
 - [Causal Forcing](https://github.com/thu-ml/Causal-Forcing) (Zhu et al.) — autoregressive diffusion distillation framework
 - [Wan 2.1](https://github.com/Wan-Video/Wan2.1) (Alibaba) — base video diffusion model
 - [CausVid](https://github.com/tianweiy/CausVid) / [Self Forcing](https://github.com/guandehe/Self-Forcing) — distillation infrastructure
-- [Rolling Forcing](https://github.com/TencentARC/RollingForcing) — long video generation
 - [FLA](https://github.com/sustcsonglin/flash-linear-attention) — efficient linear attention kernels
 
 ## Citation
@@ -157,18 +125,8 @@ If you find this work useful, please cite:
 }
 ```
 
-Also consider citing the backbone works:
-```bibtex
-@article{zhu2026causal,
-  title={Causal Forcing: Autoregressive Diffusion Distillation Done Right},
-  author={Zhu, Hongzhou and Zhao, Min and He, Guande and Su, Hang and Li, Chongxuan and Zhu, Jun},
-  journal={arXiv preprint arXiv:2602.02214},
-  year={2026}
-}
-```
-
 ## License
 
 This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
 
-Portions of this codebase are derived from [Causal Forcing](https://github.com/thu-ml/Causal-Forcing) (Apache 2.0), [Wan 2.1](https://github.com/Wan-Video/Wan2.1) (Apache 2.0), and [Rolling Forcing](https://github.com/TencentARC/RollingForcing). See [NOTICE](NOTICE) for third-party attributions.
+Portions of this codebase are derived from [Causal Forcing](https://github.com/thu-ml/Causal-Forcing) (Apache 2.0) and [Wan 2.1](https://github.com/Wan-Video/Wan2.1) (Apache 2.0). See [NOTICE](NOTICE) for third-party attributions.

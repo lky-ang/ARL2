@@ -33,13 +33,6 @@ Files derived from Wan 2.1:
   - wan/ (base model, VAE, T5, tokenizers, attention, etc.)
 
 =======================================================================
-Rolling Forcing
-https://github.com/TencentARC/RollingForcing
-
-Files derived from Rolling Forcing:
-  - long_video/
-
-=======================================================================
 CausVid / Self Forcing
 https://github.com/tianweiy/CausVid
 https://github.com/guandehe/Self-Forcing
