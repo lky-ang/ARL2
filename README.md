@@ -51,28 +51,42 @@ python setup.py develop
 
 ### Download Checkpoints
 
-Base models (Wan 2.1 + Causal Forcing):
+Base model (Wan 2.1):
 ```bash
 huggingface-cli download Wan-AI/Wan2.1-T2V-1.3B --local-dir wan_models/Wan2.1-T2V-1.3B
-huggingface-cli download zhuhz22/Causal-Forcing chunkwise/causal_forcing.pt --local-dir checkpoints
 ```
 
-ARL² hybrid attention checkpoints (coming soon):
+ARL² checkpoints (coming soon):
 ```bash
-# huggingface-cli download lky-ang/ARL2 ... --local-dir checkpoints
+# 50% hybrid (15/30 layers replaced with linear attention)
+# huggingface-cli download lky-ang/ARL2 arl2_50pct.pt --local-dir checkpoints
+
+# 75% hybrid (23/30 layers replaced with linear attention)
+# huggingface-cli download lky-ang/ARL2 arl2_75pct.pt --local-dir checkpoints
 ```
 
 ### Inference
 
-#### T2V with Hybrid Attention (ARL²)
+#### ARL² 50% Hybrid (15 layers)
 
 ```bash
 python inference.py \
   --config_path configs/causal_forcing_dmd_chunkwise.yaml \
-  --output_folder output/chunkwise \
-  --checkpoint_path checkpoints/chunkwise/causal_forcing.pt \
+  --output_folder output/arl2_50pct \
+  --checkpoint_path checkpoints/arl2_50pct.pt \
   --data_path prompts/test.txt \
-  --hybrid_layers 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+  --hybrid_layers 2 4 6 7 8 9 11 13 14 16 23 24 25 27 28
+```
+
+#### ARL² 75% Hybrid (23 layers)
+
+```bash
+python inference.py \
+  --config_path configs/causal_forcing_dmd_chunkwise.yaml \
+  --output_folder output/arl2_75pct \
+  --checkpoint_path checkpoints/arl2_75pct.pt \
+  --data_path prompts/test.txt \
+  --hybrid_layers 0 1 2 4 6 7 8 9 11 12 13 14 16 17 20 21 23 24 25 26 27 28 29
 ```
 
 ## Architecture
