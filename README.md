@@ -17,7 +17,7 @@
 <h3 align="center">
   <a href="https://arxiv.org/abs/2605.16579">Paper</a> |
   <a href="https://lky-ang.github.io/ARL2/">Website</a> |
-  <a href="#">Models (Coming Soon)</a>
+  <a href="https://huggingface.co/lky-ang/ARL2">Models</a>
 </h3>
 
 </div>
@@ -56,13 +56,13 @@ Base model (Wan 2.1):
 huggingface-cli download Wan-AI/Wan2.1-T2V-1.3B --local-dir wan_models/Wan2.1-T2V-1.3B
 ```
 
-ARL² checkpoints (coming soon):
+ARL² checkpoints:
 ```bash
 # 50% hybrid (15/30 layers replaced with linear attention)
-# huggingface-cli download lky-ang/ARL2 arl2_50pct.pt --local-dir checkpoints
+huggingface-cli download lky-ang/ARL2 arl2_50pct.pt --local-dir checkpoints
 
 # 75% hybrid (23/30 layers replaced with linear attention)
-# huggingface-cli download lky-ang/ARL2 arl2_75pct.pt --local-dir checkpoints
+huggingface-cli download lky-ang/ARL2 arl2_75pct.pt --local-dir checkpoints
 ```
 
 ### Inference
